@@ -9,6 +9,25 @@ let ball_y = 50;
 let ballSpeed_y = 10;
 
 const PADDLE_HEIGHT = 100;
+let leftPaddle_y = 250;
+let rightPaddle_y = 250;
+
+function calculateMouseMovePosition(evt){
+    let rect = canvas.getBoundingClientRect();
+    let root = document.documentElement;
+    let mouse_x = evt.clientX - rect.left - root.scrollLeft;
+    let mouse_y = evt.clientY - rect.top - root.scrollTop;
+
+    return{
+        x: mouse_x,
+        y: mouse_y
+    }
+}
+
+function leftPaddleMove(evt){
+    let mousePosition = calculateMouseMovePosition(evt);
+    leftPaddle_y = mousePosition.y - (PADDLE_HEIGHT / 2);
+}
 
 window.onload = function(){
     canvas = document.querySelector('canvas');
@@ -22,6 +41,12 @@ window.onload = function(){
         draw();
     }, frameRate);
 
+    canvas.addEventListener('mousemove', leftPaddleMove);
+
+}
+
+function ballReset(){
+    
 }
 
 
@@ -42,7 +67,6 @@ function movement(){
     else if((ball_y) < 0){
         ballSpeed_y = -ballSpeed_y;
     }
-
 }
 
 
@@ -54,8 +78,8 @@ function draw(){
 
     //paddles
     c.fillStyle = 'white';
-    c.fillRect(2, 100, 10, PADDLE_HEIGHT);
-    c.fillRect(canvas.width - 12, 100, 10, PADDLE_HEIGHT)
+    c.fillRect(2, leftPaddle_y, 10, PADDLE_HEIGHT);
+    c.fillRect(canvas.width - 12, rightPaddle_y, 10, PADDLE_HEIGHT)
 
 
     //ball
