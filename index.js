@@ -12,6 +12,9 @@ const PADDLE_HEIGHT = 100;
 let leftPaddle_y = 250;
 let rightPaddle_y = 250;
 
+let leftPlayerScore = 0;
+let rightPlayerScore = 0;
+
 function calculateMouseMovePosition(evt){
     let rect = canvas.getBoundingClientRect();
     let root = document.documentElement;
@@ -46,25 +49,55 @@ window.onload = function(){
 }
 
 function ballReset(){
-    
+    ballSpeed_x = -ballSpeed_x;
+    ball_x = canvas.width / 2;
+    ball_y = canvas.height / 2;
 }
 
+function computerMove(){
+    let rightPaddleCenter = rightPaddle_y + (PADDLE_HEIGHT / 2);
+    if(rightPaddleCenter < ball_y - 35){
+        rightPaddle_y += 6;
+    }
+    else if(rightPaddleCenter > ball_y + 35){
+        rightPaddle_y -= 6;
+    }
+}
 
 function movement(){
+    let delta_y;
     ball_x += ballSpeed_x;
     ball_y += ballSpeed_y;
 
+    computerMove();
+
     if((ball_x + ballRadius) > canvas.width){
-        ballSpeed_x = -ballSpeed_x;
+        if(ball_y > rightPaddle_y && ball_y < (rightPaddle_y + PADDLE_HEIGHT)){
+            ballSpeed_x = -ballSpeed_x;
+            delta_y = ball_y - (rightPaddle_y + PADDLE_HEIGHT / 2);
+            ballSpeed_y = delta_y * 0.35;
+        }
+        else{
+            leftPlayerScore++;
+            ballReset();
+        }
     }
-    else if((ball_y) > canvas.height){
+    else if((ball_y + ballRadius) > canvas.height){
         ballSpeed_y = -ballSpeed_y;
     }
 
     if((ball_x - ballRadius) < 0){
-        ballSpeed_x = -ballSpeed_x;
+        if(ball_y > leftPaddle_y && ball_y < (leftPaddle_y + PADDLE_HEIGHT)){
+            ballSpeed_x = -ballSpeed_x;
+            delta_y = ball_y - (leftPaddle_y + PADDLE_HEIGHT / 2);
+            ballSpeed_y = delta_y * 0.35;
+        }
+        else{
+            rightPlayerScore++;
+            ballReset();
+        }
     }
-    else if((ball_y) < 0){
+    else if((ball_y - ballRadius) < 0){
         ballSpeed_y = -ballSpeed_y;
     }
 }
@@ -81,6 +114,8 @@ function draw(){
     c.fillRect(2, leftPaddle_y, 10, PADDLE_HEIGHT);
     c.fillRect(canvas.width - 12, rightPaddle_y, 10, PADDLE_HEIGHT)
 
+    c.fillText(leftPlayerScore, 100, 100);
+    c.fillText(rightPlayerScore, canvas.width - 100, 100);
 
     //ball
     c.fillStyle = 'white';
